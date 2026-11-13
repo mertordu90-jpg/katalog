@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Dolgu Kulesi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@400;500;600&family=Vazirmatn:wght@400;500;600&display=swap">
+<style>
+/* Layout: tam ekran sahne; üstte başlık ve araçlar, sol üstte yükseklik kartı, altta tek büyük düğme. Tek görünüm (kâğıt + koyu yeşil). */
+:root{--bg:#F3F0EC;--ink:#1F2A30;--soft:#5D6A70;--teal:#17302F;--accent:#3D6B65;--gold:#C6A27F;--line:rgba(31,42,48,.14);
+  --display:"Bodoni Moda",Georgia,serif;--body:"Jost","Avenir Next",system-ui,sans-serif}
+html[dir=rtl]{--display:"Vazirmatn",Tahoma,sans-serif;--body:"Vazirmatn",Tahoma,sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:14px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.ttl{display:flex;flex-direction:column;min-width:0;flex:1 1 260px}
+.ttl small{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:500}
+html[dir=rtl] .ttl small{letter-spacing:0}
+.ttl h1{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(20px,3vw,28px);line-height:1.15;text-wrap:balance}
+.ttl h1 em{color:var(--accent)}
+.tag{margin:4px 0 0;font-family:var(--display);font-style:italic;font-size:clamp(13px,1.6vw,16px);color:#8A6A4A}
+html[dir=rtl] .tag{font-style:normal}
+html[dir=rtl] .ttl h1 em{font-style:normal}
+.tools{display:flex;gap:8px;align-items:center}
+.ib{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.ib svg{width:18px;height:18px}
+.ib .off,.ib[aria-pressed=false] .on{display:none}
+.ib[aria-pressed=false] .off{display:block}
+.lang{appearance:none;-webkit-appearance:none;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:9px 28px 9px 12px;font:500 13px var(--body);cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 15px) 52%,calc(100% - 11px) 52%;background-size:4px 4px;background-repeat:no-repeat}
+html[dir=rtl] .lang{padding:9px 12px 9px 28px;background-position:15px 52%,19px 52%}
+.back{border:1px solid var(--line);background:#fff;color:var(--ink);font:500 13px var(--body);padding:9px 14px;border-radius:999px;cursor:pointer}
+main{flex:1;min-height:0;position:relative}
+canvas{display:block;width:100%;height:100%;cursor:pointer;touch-action:manipulation}
+.hud{position:absolute;top:14px;inset-inline-start:max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);padding:12px 16px;border-radius:8px;pointer-events:none;max-width:calc(100% - 32px);box-shadow:0 10px 30px -18px rgba(23,48,47,.6)}
+.hud b{font-family:var(--display);font-weight:400;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.hud span{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums}
+.hud .nx{color:var(--accent);font-weight:500;font-size:12px}
+.toast{position:absolute;left:50%;top:18px;transform:translateX(-50%) translateY(-8px) scale(.96);background:var(--teal);color:#EFE6DD;padding:11px 18px;border-radius:999px;font-size:14.5px;font-weight:500;opacity:0;transition:opacity .25s,transform .35s cubic-bezier(.3,1.5,.5,1);pointer-events:none;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+.toast i{font-style:normal;color:var(--gold)}
+@media (max-width:640px){.toast{top:auto;bottom:14px}.hud b{font-size:28px}}
+footer{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;padding-block:12px max(14px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-top:1px solid var(--line);background:var(--bg)}
+.go{position:relative;border:0;background:var(--accent);color:#fff;font:600 16px var(--body);padding:15px 28px 15px 24px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:12px;box-shadow:0 10px 24px -12px rgba(23,48,47,.8);transition:transform .12s}
+.go:active{transform:scale(.96)}
+.go .taps{display:flex;gap:5px}
+.go .taps i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35)}
+.go .taps i.on{background:var(--gold)}
+.go.pulse{animation:pulse .5s}
+@keyframes pulse{40%{transform:scale(1.06)}}
+.sec{border:0;background:none;color:var(--soft);font:500 13px var(--body);padding:8px 6px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.pb{flex-basis:100%;display:flex;align-items:center;gap:10px;max-width:520px}
+.pb .bar{flex:1;height:5px;background:#E2DBD3;border-radius:3px;overflow:hidden}
+.pb .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9DBDB7,var(--accent));transition:width .4s}
+.pb span{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.how{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 32px));background:#fff;border-radius:8px;padding:12px 14px;font-size:12px;color:var(--soft);line-height:1.5;box-shadow:0 14px 40px -18px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:reduce){.go,.toast{transition:none}.go.pulse{animation:none}}
+</style>
+
+<header>
+  <div class="ttl"><small id="sub"></small><h1 id="ttl"></h1><p class="tag" id="tag"></p></div>
+  <div class="tools">
+    <button class="ib" id="snd" aria-pressed="true"><svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
+    <select class="lang" id="lang" aria-label="Dil"></select><button class="back" id="back"></button>
+  </div>
+</header>
+
+<main>
+  <canvas id="cv"></canvas>
+  <div class="hud"><b id="hH">0 cm</b><span id="hC"></span><span class="nx" id="hN"></span></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="how" id="howBox" hidden></div>
+</main>
+
+<footer>
+  <button class="go" id="add"><span id="addT"></span><span class="taps" id="taps" aria-hidden="true"></span></button>
+  <button class="sec" id="end"></button>
+  <button class="sec" id="reset"></button>
+  <button class="sec" id="how"></button>
+  <div class="pb"><div class="bar"><i id="pb"></i></div><span id="pt"></span></div>
+</footer>
+
+<script>
+(function(){
+  const PATIENTS=65000, AVG_CC=2, TOTAL=PATIENTS*AVG_CC;
+  const UNIT_CM=7.25, UNIT_W_CM=1.6, PLANE=10000, TOTAL_H=TOTAL*UNIT_CM/100;
+
+  const LM=[
+    ['egg',.06,'egg',1],['cat',.3,'cat',-1],['chicken',.4,'chicken',1],['child',1.1,'human',-1],['adult',1.75,'human',1],
+    ['elephant',3.2,'elephant',-1],['trex',4,'trex',1],['giraffe',5.5,'giraffe',-1],['wall',8,'wall',1],['brachio',13,'dino',-1],
+    ['kiz',23,'kiz',1],['chichen',30,'chichen',-1],['rhodes',33,'rhodes',1],['christ',38,'christ',-1],['petra',40,'petra',1],
+    ['mausoleum',45,'mausoleum',-1],['colos',48,'colos',1],['pisa',56,'pisa',-1],['galata',63,'galata',1],['taj',73,'taj',-1],
+    ['liberty',93,'liberty',1],['bigben',96,'bigben',-1],['pharos',100,'pharos',1],['fsm',105,'bridge',-1],['giza',139,'pyramid',1],
+    ['sapphire',261,'sapphire',-1],['eiffel',330,'eiffel',1],['camlica',369,'camlica',-1],['empire',443,'empire',1],['petronas',452,'petronas',-1],
+    ['mecca',601,'mecca',1],['burj',828,'burj',-1],['balloon',1000,'balloon',1,1],['babadag',1969,'paraglider',-1,1],['machu',2430,'machu',1,1],
+    ['skydive',4000,'skydiver',-1,1],['condor',5000,'condor',1,1],['everest',8849,'mount',-1],['cloud',2000,'cloud',1,1]
+  ].map(([id,h,t,s,f])=>({id,h,t,s,f:!!f}));
+
+  // odak: yalnızca bilinen, aralıkları dengeli hedefler
+  const STAGE_IDS=['egg','cat','adult','giraffe','brachio','kiz','colos','galata','taj','liberty','giza','eiffel','mecca','burj','balloon','cloud','skydive','condor','everest'];
+  const STG=STAGE_IDS.map(id=>LM.find(l=>l.id===id));
+  STG.forEach((l,i)=>{l.s=i%2?-1:1;});
+  const TAPS=i=>3;   // her hedef için gereken dokunuş
+
+  const NAMES={
+    tr:'Yumurta|Kedi|Tavuk|Çocuk|İnsan|Fil|T-Rex|Zürafa|Çin Seddi|Brakiyozor|Kız Kulesi|Chichen Itza|Rodos Heykeli|Kurtarıcı İsa|Petra (Hazine)|Halikarnas Mozolesi|Kolezyum|Pisa Kulesi|Galata Kulesi|Tac Mahal|Özgürlük Heykeli|Big Ben|İskenderiye Feneri|FSM Köprüsü|Keops Piramidi|Sapphire İstanbul|Eyfel Kulesi|Çamlıca Kulesi|Empire State|Petronas Kuleleri|Mekke Saat Kulesi|Burj Khalifa|Kapadokya balonu|Babadağ yamaç paraşütü|Machu Picchu|Paraşüt atlayışı|And kondoru|Everest|Alçak bulutlar',
+    en:'Egg|Cat|Chicken|Child|Adult|Elephant|T-Rex|Giraffe|Great Wall of China|Brachiosaurus|Maiden\'s Tower|Chichen Itza|Colossus of Rhodes|Christ the Redeemer|Petra (Treasury)|Mausoleum at Halicarnassus|Colosseum|Leaning Tower of Pisa|Galata Tower|Taj Mahal|Statue of Liberty|Big Ben|Lighthouse of Alexandria|FSM Bridge|Great Pyramid of Giza|Sapphire Istanbul|Eiffel Tower|Çamlıca Tower|Empire State|Petronas Towers|Makkah Clock Tower|Burj Khalifa|Cappadocia balloon|Babadağ paragliding|Machu Picchu|Skydive jump|Andean condor|Everest|Low clouds',
+    de:'Ei|Katze|Huhn|Kind|Mensch|Elefant|T-Rex|Giraffe|Chinesische Mauer|Brachiosaurus|Mädchenturm|Chichén Itzá|Koloss von Rhodos|Cristo Redentor|Petra (Schatzhaus)|Mausoleum von Halikarnassos|Kolosseum|Schiefer Turm von Pisa|Galataturm|Taj Mahal|Freiheitsstatue|Big Ben|Leuchtturm von Alexandria|FSM-Brücke|Cheops-Pyramide|Sapphire Istanbul|Eiffelturm|Çamlıca-Turm|Empire State|Petronas Towers|Mekka-Uhrturm|Burj Khalifa|Ballon in Kappadokien|Gleitschirm Babadağ|Machu Picchu|Fallschirmsprung|Andenkondor|Everest|Tiefe Wolken',
+    fr:'Œuf|Chat|Poule|Enfant|Adulte|Éléphant|T-Rex|Girafe|Grande Muraille|Brachiosaure|Tour de Léandre|Chichén Itzá|Colosse de Rhodes|Christ Rédempteur|Pétra (Trésor)|Mausolée d\'Halicarnasse|Colisée|Tour de Pise|Tour de Galata|Taj Mahal|Statue de la Liberté|Big Ben|Phare d\'Alexandrie|Pont FSM|Pyramide de Khéops|Sapphire Istanbul|Tour Eiffel|Tour de Çamlıca|Empire State|Tours Petronas|Tour de l\'Horloge (La Mecque)|Burj Khalifa|Montgolfière en Cappadoce|Parapente à Babadağ|Machu Picchu|Saut en parachute|Condor des Andes|Everest|Nuages bas',
+    it:'Uovo|Gatto|Gallina|Bambino|Adulto|Elefante|T-Rex|Giraffa|Grande Muraglia|Brachiosauro|Torre di Leandro|Chichén Itzá|Colosso di Rodi|Cristo Redentore|Petra (Tesoro)|Mausoleo di Alicarnasso|Colosseo|Torre di Pisa|Torre di Galata|Taj Mahal|Statua della Libertà|Big Ben|Faro di Alessandria|Ponte FSM|Piramide di Cheope|Sapphire Istanbul|Torre Eiffel|Torre di Çamlıca|Empire State|Torri Petronas|Torre dell\'Orologio (La Mecca)|Burj Khalifa|Mongolfiera in Cappadocia|Parapendio a Babadağ|Machu Picchu|Lancio col paracadute|Condor delle Ande|Everest|Nuvole basse',
+    es:'Huevo|Gato|Gallina|Niño|Adulto|Elefante|T-Rex|Jirafa|Gran Muralla|Braquiosaurio|Torre de Leandro|Chichén Itzá|Coloso de Rodas|Cristo Redentor|Petra (Tesoro)|Mausoleo de Halicarnaso|Coliseo|Torre de Pisa|Torre de Gálata|Taj Mahal|Estatua de la Libertad|Big Ben|Faro de Alejandría|Puente FSM|Pirámide de Keops|Sapphire Estambul|Torre Eiffel|Torre de Çamlıca|Empire State|Torres Petronas|Torre del Reloj (La Meca)|Burj Khalifa|Globo en Capadocia|Parapente en Babadağ|Machu Picchu|Salto en paracaídas|Cóndor andino|Everest|Nubes bajas',
+    ru:'Яйцо|Кошка|Курица|Ребёнок|Взрослый|Слон|Тираннозавр|Жираф|Великая Китайская стена|Брахиозавр|Девичья башня|Чичен-Ица|Колосс Родосский|Христос-Искупитель|Петра (Сокровищница)|Галикарнасский мавзолей|Колизей|Пизанская башня|Галатская башня|Тадж-Махал|Статуя Свободы|Биг-Бен|Александрийский маяк|Мост FSM|Пирамида Хеопса|Sapphire Istanbul|Эйфелева башня|Башня Чамлыджа|Эмпайр-стейт-билдинг|Башни Петронас|Часовая башня Мекки|Бурдж-Халифа|Шар в Каппадокии|Параплан Бабадаг|Мачу-Пикчу|Прыжок с парашютом|Андский кондор|Эверест|Нижние облака',
+    ar:'بيضة|قطة|دجاجة|طفل|إنسان|فيل|تي ركس|زرافة|سور الصين العظيم|براكيوصور|برج الفتاة|تشيتشن إيتزا|تمثال رودس|تمثال المسيح الفادي|البتراء (الخزنة)|ضريح هاليكارناسوس|الكولوسيوم|برج بيزا|برج غلطة|تاج محل|تمثال الحرية|بيغ بن|منارة الإسكندرية|جسر FSM|هرم خوفو|صفير إسطنبول|برج إيفل|برج تشامليجا|إمباير ستيت|برجا بتروناس|برج الساعة بمكة|برج خليفة|منطاد كابادوكيا|الطيران الشراعي في باباداغ|ماتشو بيتشو|القفز بالمظلة|كندور الأنديز|إيفرست|الغيوم المنخفضة',
+    fa:'تخم‌مرغ|گربه|مرغ|کودک|انسان|فیل|تی‌رکس|زرافه|دیوار چین|براکیوسور|برج دختر|چیچن ایتزا|مجسمه رودس|مجسمه مسیح نجات‌دهنده|پترا (خزانه)|آرامگاه هالیکارناسوس|کولوسئوم|برج پیزا|برج گالاتا|تاج محل|مجسمه آزادی|بیگ بن|فانوس دریایی اسکندریه|پل FSM|هرم خوفو|سافایر استانبول|برج ایفل|برج چاملیجا|امپایر استیت|برج‌های پتروناس|برج ساعت مکه|برج خلیفه|بالن کاپادوکیه|پاراگلایدر باباداغ|ماچو پیچو|پرش با چتر نجات|کندور آند|اورست|ابرهای کم‌ارتفاع'
+  };
+  const UI={
+    tr:{label:'Türkçe',sub:"Dr. Muhammed Davud · 2021'den bu yana",h:'Kullandığımız ürünleri <em>üst üste</em> koysaydık?',add:'Üst üste koy',end:'Sonuna git',reset:'Baştan',back:'← Kataloğa dön',cnt:'{n} ürün üst üste',next:'Sıradaki: {x} ({h})',plane:'Yolcu uçağı ~10.000 m',planeN:'yolcu uçağı (~10.000 m)',pass:'{x} geride kaldı',many:'{n} hedef birden geride kaldı',all:'Hepsini koyduk',of:'{a} / {b} ürün',total:'Toplam {h}',note:'Tahmin: {p} hasta × ortalama 2 cc = {t} ürün. Ortalama boy 7,25 cm (şırınga 10 cm, flakon 4,5 cm).',aria:'Ürün kulesi; büyütmek için tıklayın',lang:'Dil'},
+    en:{label:'English',sub:'Dr. Muhammed Davud · since 2021',h:'What if we <em>stacked</em> every product we have used?',add:'Stack more',end:'Jump to the end',reset:'Restart',back:'← Back to catalogue',cnt:'{n} products stacked',next:'Next: {x} ({h})',plane:'Airliner ~10,000 m',planeN:'airliner (~10,000 m)',pass:'Passed: {x}',many:'Passed {n} at once',all:'All stacked',of:'{a} / {b} products',total:'Total {h}',note:'Estimate: {p} patients × 2 cc on average = {t} products. Average length 7.25 cm (syringe 10 cm, vial 4.5 cm).',aria:'Product tower; click to grow',lang:'Language'},
+    de:{label:'Deutsch',sub:'Dr. Muhammed Davud · seit 2021',h:'Was, wenn wir alle Produkte <em>stapeln</em>?',add:'Weiter stapeln',end:'Zum Ende',reset:'Neu starten',back:'← Zurück zum Katalog',cnt:'{n} Produkte gestapelt',next:'Nächstes Ziel: {x} ({h})',plane:'Verkehrsflugzeug ~10.000 m',planeN:'Verkehrsflugzeug (~10.000 m)',pass:'Überholt: {x}',many:'{n} auf einmal überholt',all:'Alles gestapelt',of:'{a} / {b} Produkte',total:'Gesamt {h}',note:'Schätzung: {p} Patienten × im Schnitt 2 ml = {t} Produkte. Mittlere Länge 7,25 cm (Spritze 10 cm, Fläschchen 4,5 cm).',aria:'Produktturm; zum Wachsen klicken',lang:'Sprache'},
+    fr:{label:'Français',sub:'Dr Muhammed Davud · depuis 2021',h:'Et si l\'on <em>empilait</em> tous nos produits ?',add:'Empiler',end:'Aller à la fin',reset:'Recommencer',back:'← Retour au catalogue',cnt:'{n} produits empilés',next:'Prochain : {x} ({h})',plane:'Avion de ligne ~10 000 m',planeN:'avion de ligne (~10 000 m)',pass:'Dépassé : {x}',many:'{n} dépassés d\'un coup',all:'Tout est empilé',of:'{a} / {b} produits',total:'Total {h}',note:'Estimation : {p} patients × 2 ml en moyenne = {t} produits. Longueur moyenne 7,25 cm (seringue 10 cm, flacon 4,5 cm).',aria:'Tour de produits ; cliquez pour la faire grandir',lang:'Langue'},
+    it:{label:'Italiano',sub:'Dr. Muhammed Davud · dal 2021',h:'E se <em>impilassimo</em> tutti i prodotti usati?',add:'Impila',end:'Vai alla fine',reset:'Ricomincia',back:'← Torna al catalogo',cnt:'{n} prodotti impilati',next:'Prossimo: {x} ({h})',plane:'Aereo di linea ~10.000 m',planeN:'aereo di linea (~10.000 m)',pass:'Superato: {x}',many:'{n} superati in un colpo',all:'Tutto impilato',of:'{a} / {b} prodotti',total:'Totale {h}',note:'Stima: {p} pazienti × 2 ml in media = {t} prodotti. Lunghezza media 7,25 cm (siringa 10 cm, fiala 4,5 cm).',aria:'Torre di prodotti; clicca per farla crescere',lang:'Lingua'},
+    es:{label:'Español',sub:'Dr. Muhammed Davud · desde 2021',h:'¿Y si <em>apiláramos</em> todos los productos usados?',add:'Apilar',end:'Ir al final',reset:'Reiniciar',back:'← Volver al catálogo',cnt:'{n} productos apilados',next:'Siguiente: {x} ({h})',plane:'Avión comercial ~10.000 m',planeN:'avión comercial (~10.000 m)',pass:'Superado: {x}',many:'{n} superados de golpe',all:'Todo apilado',of:'{a} / {b} productos',total:'Total {h}',note:'Estimación: {p} pacientes × 2 ml de media = {t} productos. Longitud media 7,25 cm (jeringa 10 cm, vial 4,5 cm).',aria:'Torre de productos; haga clic para crecer',lang:'Idioma'},
+    ru:{label:'Русский',sub:'Д-р Мухаммед Давуд · с 2021 года',h:'А если <em>сложить</em> все использованные препараты?',add:'Добавить',end:'В конец',reset:'Сначала',back:'← К каталогу',cnt:'{n} препаратов в башне',next:'Следующая цель: {x} ({h})',plane:'Пассажирский самолёт ~10 000 м',planeN:'пассажирский самолёт (~10 000 м)',pass:'Позади: {x}',many:'Позади сразу {n}',all:'Всё сложено',of:'{a} / {b} препаратов',total:'Итого {h}',note:'Оценка: {p} пациентов × в среднем 2 мл = {t} препаратов. Средняя длина 7,25 см (шприц 10 см, флакон 4,5 см).',aria:'Башня из препаратов; нажмите, чтобы растить',lang:'Язык'},
+    ar:{label:'العربية',dir:'rtl',sub:'د. محمد داود · منذ 2021',h:'ماذا لو <em>كدّسنا</em> كل المنتجات التي استخدمناها؟',add:'كدّس المزيد',end:'اذهب إلى النهاية',reset:'من البداية',back:'العودة إلى الدليل →',cnt:'{n} منتج مكدّس',next:'التالي: {x} ({h})',plane:'طائرة ركاب ~10,000 م',planeN:'طائرة ركاب (~10,000 م)',pass:'تجاوزنا: {x}',many:'تجاوزنا {n} دفعة واحدة',all:'كدّسنا كل شيء',of:'{a} / {b} منتج',total:'المجموع {h}',note:'تقدير: {p} مريض × 2 مل في المتوسط = {t} منتج. متوسط الطول 7.25 سم (الحقنة 10 سم، العبوة 4.5 سم).',aria:'برج المنتجات؛ انقر لينمو',lang:'اللغة'},
+    fa:{label:'فارسی',dir:'rtl',sub:'دکتر محمد داوود · از ۲۰۲۱',h:'اگر همه محصولات مصرف‌شده را <em>روی هم</em> می‌چیدیم؟',add:'روی هم بچین',end:'رفتن به پایان',reset:'از اول',back:'بازگشت به کاتالوگ →',cnt:'{n} محصول روی هم',next:'بعدی: {x} ({h})',plane:'هواپیمای مسافربری ~۱۰٬۰۰۰ متر',planeN:'هواپیمای مسافربری (~۱۰٬۰۰۰ متر)',pass:'پشت سر گذاشتیم: {x}',many:'{n} مورد را یک‌جا رد کردیم',all:'همه را چیدیم',of:'{a} / {b} محصول',total:'مجموع {h}',note:'برآورد: {p} بیمار × میانگین ۲ سی‌سی = {t} محصول. طول متوسط ۷٫۲۵ سانتی‌متر (سرنگ ۱۰، ویال ۴٫۵ سانتی‌متر).',aria:'برج محصولات؛ برای بلندتر شدن کلیک کنید',lang:'زبان'}
+  };
+  const UI2={
+    tr:{how:'Nasıl hesaplandı?',fin:'Toplam {h} · Uçağa {m} kaldı',snd:'Ses'},en:{how:'How is this calculated?',fin:'Total {h} · {m} below the airliner',snd:'Sound'},
+    de:{how:'Wie wird das berechnet?',fin:'Gesamt {h} · noch {m} bis zum Flugzeug',snd:'Ton'},fr:{how:'Comment est-ce calculé ?',fin:'Total {h} · à {m} de l\'avion',snd:'Son'},
+    it:{how:'Come è calcolato?',fin:'Totale {h} · a {m} dall\'aereo',snd:'Suono'},es:{how:'¿Cómo se calcula?',fin:'Total {h} · a {m} del avión',snd:'Sonido'},
+    ru:{how:'Как это посчитано?',fin:'Итого {h} · до самолёта {m}',snd:'Звук'},ar:{how:'كيف حُسب ذلك؟',fin:'المجموع {h} · تبقّى {m} حتى الطائرة',snd:'الصوت'},
+    fa:{how:'چگونه محاسبه شد؟',fin:'مجموع {h} · {m} تا هواپیما',snd:'صدا'}};
+  const TAG={"tr": "Hepsini minimum dozla, doğallığı bozmadan elde ettik.", "en": "Every result achieved with the minimum dose, keeping it natural.", "de": "Jedes Ergebnis erreichten wir mit minimaler Dosis und ganz natürlich.", "fr": "Chaque résultat obtenu avec la dose minimale, en préservant le naturel.", "it": "Ogni risultato ottenuto con la dose minima, senza perdere naturalezza.", "es": "Cada resultado, con la dosis mínima y sin perder naturalidad.", "ru": "Каждый результат достигнут минимальной дозой, без потери естественности.", "ar": "حققنا كل نتيجة بأقل جرعة ممكنة ودون المساس بالمظهر الطبيعي.", "fa": "هر نتیجه را با کمترین دوز و بدون از بین بردن طبیعی بودن به دست آوردیم."};
+  for(const k in UI2)Object.assign(UI[k],UI2[k],{tag:TAG[k]});
+  const ORDER=['tr','en','de','fr','it','es','ru','ar','fa'];
+  let LG='tr',U=UI.tr,NM={};
+  const loc=()=>LG==='ar'?'ar-u-nu-latn':LG;
+  const fmt=n=>Math.round(n).toLocaleString(loc());
+  const fmtM=m=>m<1?(Math.round(m*100).toLocaleString(loc())+' cm'):m<10?(m.toLocaleString(loc(),{maximumFractionDigits:2})+' m'):(fmt(m)+' m');
+  const T=(s,o)=>s.replace(/\{(\w)\}/g,(_,k)=>o[k]);
+
+  const ASPECT={egg:.72,cat:.9,human:.3,giraffe:.6,dino:1.5,kiz:1.4,colos:3,galata:.32,taj:1.3,liberty:.4,pyramid:1.6,eiffel:.4,mecca:.5,burj:.15,mount:3};
+  const LIGHT='rgba(255,255,255,.42)';
+  const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  let anim=null;const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,DPR=1,stage=0,tap=0,count=0,shown=0,dispH=0,camTop=.12,raf=0,glow=0;
+  function size(){const r=cv.getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+  new ResizeObserver(()=>{size();draw();}).observe(cv);
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function mix(c1,c2,t){const a=c1.match(/\w\w/g).map(x=>parseInt(x,16)),b=c2.match(/\w\w/g).map(x=>parseInt(x,16));return 'rgb('+a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')+')';}
+  function rr(c,x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.fill();}
+  function tri(c,a,b,d){c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(d[0],d[1]);c.fill();}
+  function light(c,fn){c.save();c.fillStyle=LIGHT;fn();c.restore();}
+  function strokeIn(c,w,fn){c.save();c.lineWidth=w;c.strokeStyle=c.fillStyle;c.lineCap='round';c.beginPath();fn();c.stroke();c.restore();}
+  const SH={
+    egg(c){c.beginPath();c.moveTo(0,-1);c.bezierCurveTo(.26,-1,.38,-.55,.36,-.34);c.bezierCurveTo(.34,-.1,.18,0,0,0);c.bezierCurveTo(-.18,0,-.34,-.1,-.36,-.34);c.bezierCurveTo(-.38,-.55,-.26,-1,0,-1);c.fill();light(c,()=>{c.beginPath();c.ellipse(-.12,-.68,.05,.12,.3,0,7);c.fill();});},
+    cat(c){c.beginPath();c.ellipse(-.06,-.36,.3,.36,0,0,7);c.fill();c.beginPath();c.arc(.16,-.76,.17,0,7);c.fill();tri(c,[.03,-.86],[.06,-1],[.15,-.9]);tri(c,[.2,-.91],[.29,-1],[.31,-.83]);strokeIn(c,.06,()=>{c.moveTo(-.32,-.12);c.quadraticCurveTo(-.55,-.15,-.5,-.45);});},
+    chicken(c){c.beginPath();c.ellipse(-.05,-.45,.36,.27,0,0,7);c.fill();c.beginPath();c.arc(.27,-.78,.14,0,7);c.fill();tri(c,[.4,-.8],[.52,-.76],[.4,-.72]);tri(c,[-.38,-.5],[-.55,-.82],[-.28,-.62]);c.fillRect(-.12,-.2,.04,.2);c.fillRect(.06,-.2,.04,.2);},
+    human(c){c.beginPath();c.arc(0,-.92,.075,0,7);c.fill();rr(c,-.13,-.82,.26,.4,.06);c.fillRect(-.11,-.46,.09,.46);c.fillRect(.02,-.46,.09,.46);},
+    elephant(c){c.beginPath();c.ellipse(-.05,-.58,.52,.32,0,0,7);c.fill();[-.48,-.28,.1,.28].forEach(x=>c.fillRect(x,-.4,.15,.4));c.beginPath();c.arc(.5,-.72,.23,0,7);c.fill();strokeIn(c,.1,()=>{c.moveTo(.66,-.62);c.quadraticCurveTo(.8,-.3,.72,-.08);});light(c,()=>{c.beginPath();c.ellipse(.38,-.7,.12,.18,0,0,7);c.fill();});},
+    trex(c){c.save();c.translate(-.05,-.58);c.rotate(-.25);c.beginPath();c.ellipse(0,0,.36,.17,0,0,7);c.fill();c.restore();c.beginPath();c.ellipse(.38,-.86,.2,.1,-.1,0,7);c.fill();c.fillRect(.24,-.86,.12,.2);tri(c,[-.32,-.56],[-1,-.3],[-.28,-.42]);c.fillRect(-.12,-.48,.1,.48);c.fillRect(.04,-.5,.1,.5);c.fillRect(.2,-.62,.12,.03);},
+    giraffe(c){c.beginPath();c.ellipse(-.08,-.45,.22,.1,0,0,7);c.fill();[-.24,-.16,.02,.1].forEach(x=>c.fillRect(x,-.42,.04,.42));c.beginPath();c.moveTo(.06,-.5);c.lineTo(.18,-.95);c.lineTo(.24,-.94);c.lineTo(.16,-.42);c.fill();c.beginPath();c.ellipse(.25,-.95,.08,.04,.3,0,7);c.fill();},
+    wall(c){c.beginPath();c.moveTo(-1.5,0);c.lineTo(-1.5,-.62);c.quadraticCurveTo(-.4,-.72,.55,-.6);c.lineTo(.55,0);c.fill();for(let i=0;i<10;i++)c.fillRect(-1.5+i*.205,-.74+Math.sin(i*.35)*.03,.1,.12);c.fillRect(.55,-.9,.5,.9);for(let i=0;i<3;i++)c.fillRect(.55+i*.2,-1,.1,.1);c.beginPath();c.moveTo(1.05,0);c.lineTo(1.05,-.58);c.lineTo(1.5,-.5);c.lineTo(1.5,0);c.fill();light(c,()=>{c.fillRect(.73,-.6,.14,.22);});},
+    dino(c){c.beginPath();c.ellipse(-.05,-.38,.35,.16,0,0,7);c.fill();c.beginPath();c.moveTo(.18,-.46);c.lineTo(.42,-.95);c.lineTo(.5,-.93);c.lineTo(.3,-.36);c.fill();c.beginPath();c.ellipse(.5,-.96,.09,.045,0,0,7);c.fill();c.beginPath();c.moveTo(-.35,-.42);c.quadraticCurveTo(-.7,-.38,-.85,-.2);c.lineTo(-.33,-.32);c.fill();[-.28,-.15,.08,.2].forEach(x=>c.fillRect(x,-.3,.07,.3));},
+    kiz(c){c.beginPath();c.ellipse(0,0,.7,.08,0,Math.PI,0);c.fill();c.fillRect(-.4,-.32,.8,.3);c.fillRect(-.1,-.84,.2,.54);tri(c,[-.13,-.84],[0,-1],[.13,-.84]);light(c,()=>{for(let i=0;i<4;i++)c.fillRect(-.33+i*.19,-.25,.07,.1);c.fillRect(-.04,-.72,.08,.1);});},
+    chichen(c){for(let i=0;i<9;i++){const w=1.8-i*.15;c.fillRect(-w/2,-(i+1)*.085,w,.086);}c.fillRect(-.24,-1,.48,.25);light(c,()=>{c.fillRect(-.1,-.76,.2,.76);c.fillRect(-.07,-.94,.14,.14);});},
+    rhodes(c){c.fillRect(-.36,-.08,.22,.08);c.fillRect(.14,-.08,.22,.08);c.beginPath();c.moveTo(-.28,-.08);c.lineTo(-.07,-.44);c.lineTo(.07,-.44);c.lineTo(.28,-.08);c.lineTo(.2,-.08);c.lineTo(0,-.36);c.lineTo(-.2,-.08);c.fill();c.fillRect(-.08,-.72,.16,.3);c.beginPath();c.arc(0,-.78,.055,0,7);c.fill();c.save();c.translate(.07,-.7);c.rotate(-.25);c.fillRect(0,-.26,.035,.28);c.restore();c.beginPath();c.arc(.14,-.97,.035,0,7);c.fill();},
+    christ(c){c.fillRect(-.09,-.26,.18,.26);c.beginPath();c.moveTo(-.07,-.26);c.lineTo(-.055,-.82);c.lineTo(.055,-.82);c.lineTo(.07,-.26);c.fill();c.fillRect(-.5,-.84,1,.07);c.beginPath();c.arc(0,-.92,.065,0,7);c.fill();},
+    petra(c){c.fillRect(-.36,-.46,.72,.46);tri(c,[-.4,-.46],[0,-.56],[.4,-.46]);c.fillRect(-.12,-.88,.24,.3);c.fillRect(-.32,-.82,.12,.24);c.fillRect(.2,-.82,.12,.24);c.beginPath();c.moveTo(-.14,-.88);c.lineTo(0,-.97);c.lineTo(.14,-.88);c.fill();light(c,()=>{for(let i=0;i<6;i++)c.fillRect(-.32+i*.125,-.42,.035,.42);c.fillRect(-.03,-.2,.06,.2);});},
+    mausoleum(c){c.fillRect(-.4,-.4,.8,.4);c.fillRect(-.32,-.62,.64,.22);for(let i=0;i<6;i++){const w=.64-i*.1;c.fillRect(-w/2,-.62-(i+1)*.05,w,.05);}c.fillRect(-.07,-1,.14,.08);light(c,()=>{for(let i=0;i<7;i++)c.fillRect(-.29+i*.09,-.6,.04,.18);});},
+    colos(c){c.beginPath();c.moveTo(-1.5,0);c.lineTo(-1.5,-.82);c.quadraticCurveTo(0,-1.08,1.5,-.95);c.lineTo(1.5,0);c.fill();light(c,()=>{for(let r=0;r<3;r++)for(let i=0;i<12;i++){const x=-1.38+i*.235,y=-.24-r*.27;c.beginPath();c.moveTo(x,y+.17);c.lineTo(x,y+.04);c.arc(x+.07,y+.04,.07,Math.PI,0);c.lineTo(x+.14,y+.17);c.fill();}});},
+    pisa(c){c.save();c.rotate(.075);for(let i=0;i<8;i++)c.fillRect(-.12,-1+i*.125,.24,.11);c.fillRect(-.09,-1.06,.18,.08);c.restore();},
+    galata(c){c.fillRect(-.16,-.08,.32,.08);c.fillRect(-.12,-.75,.24,.68);tri(c,[-.15,-.74],[0,-1],[.15,-.74]);light(c,()=>c.fillRect(-.12,-.66,.24,.04));},
+    taj(c){c.fillRect(-.65,-.08,1.3,.08);c.fillRect(-.3,-.5,.6,.42);c.beginPath();c.ellipse(0,-.66,.2,.22,0,0,7);c.fill();c.fillRect(-.12,-.56,.24,.08);tri(c,[-.025,-.86],[0,-1],[.025,-.86]);[-.6,.6].forEach(x=>{c.fillRect(x-.025,-.66,.05,.58);c.beginPath();c.arc(x,-.68,.04,0,7);c.fill();});[-.24,.24].forEach(x=>{c.beginPath();c.arc(x,-.53,.06,Math.PI,0);c.fill();});light(c,()=>{c.beginPath();c.moveTo(-.09,-.08);c.lineTo(-.09,-.3);c.arc(0,-.3,.09,Math.PI,0);c.lineTo(.09,-.08);c.fill();});},
+    liberty(c){c.fillRect(-.18,-.5,.36,.5);c.fillRect(-.12,-.56,.24,.06);c.beginPath();c.moveTo(-.07,-.56);c.lineTo(-.04,-.88);c.lineTo(.04,-.88);c.lineTo(.07,-.56);c.fill();c.beginPath();c.arc(0,-.9,.035,0,7);c.fill();c.fillRect(.03,-.99,.025,.13);c.beginPath();c.arc(.043,-.995,.022,0,7);c.fill();},
+    bigben(c){c.fillRect(-.08,-.78,.16,.78);tri(c,[-.09,-.78],[0,-.92],[.09,-.78]);c.fillRect(-.01,-1,.02,.1);light(c,()=>{c.beginPath();c.arc(0,-.68,.055,0,7);c.fill();});},
+    pharos(c){c.fillRect(-.17,-.55,.34,.55);c.fillRect(-.12,-.82,.24,.27);c.fillRect(-.07,-.95,.14,.13);light(c,()=>{c.beginPath();c.arc(0,-.98,.035,0,7);c.fill();for(let i=0;i<3;i++)c.fillRect(-.03,-.48+i*.14,.06,.07);});},
+    bridge(c){c.fillRect(-.85,-1,.07,1);c.fillRect(.78,-1,.07,1);c.fillRect(-2.2,-.62,4.4,.035);c.save();c.lineWidth=.012;c.strokeStyle=c.fillStyle;c.beginPath();c.moveTo(-2.2,-.62);c.quadraticCurveTo(-1.5,-.95,-.81,-1);c.quadraticCurveTo(0,-.55,.81,-1);c.quadraticCurveTo(1.5,-.95,2.2,-.62);c.stroke();c.restore();},
+    pyramid(c){tri(c,[-.8,0],[0,-1],[.8,0]);light(c,()=>tri(c,[0,-1],[.8,0],[.22,0]));},
+    sapphire(c){c.beginPath();c.moveTo(-.09,0);c.lineTo(-.09,-.86);c.lineTo(.03,-1);c.lineTo(.09,-.93);c.lineTo(.09,0);c.fill();light(c,()=>c.fillRect(-.09,-.86,.03,.86));},
+    eiffel(c){c.beginPath();c.moveTo(-.2,0);c.quadraticCurveTo(-.1,-.35,-.04,-.85);c.lineTo(0,-1);c.lineTo(.04,-.85);c.quadraticCurveTo(.1,-.35,.2,0);c.lineTo(.1,0);c.quadraticCurveTo(0,-.16,-.1,0);c.fill();c.fillRect(-.12,-.3,.24,.025);c.fillRect(-.07,-.58,.14,.02);},
+    camlica(c){c.fillRect(-.025,-.82,.05,.82);c.beginPath();c.ellipse(0,-.7,.06,.05,0,0,7);c.fill();c.fillRect(-.006,-1,.012,.2);c.fillRect(-.1,-.03,.2,.03);},
+    empire(c){c.fillRect(-.13,-.6,.26,.6);c.fillRect(-.09,-.78,.18,.18);c.fillRect(-.05,-.87,.1,.09);c.fillRect(-.012,-1,.024,.13);},
+    petronas(c){[-.12,.12].forEach(x=>{c.fillRect(x-.06,-.82,.12,.82);c.fillRect(x-.04,-.9,.08,.08);c.fillRect(x-.008,-1,.016,.1);});c.fillRect(-.08,-.45,.16,.025);},
+    mecca(c){c.fillRect(-.25,-.25,.5,.25);c.fillRect(-.08,-.72,.16,.47);c.fillRect(-.05,-.85,.1,.13);tri(c,[-.03,-.85],[0,-1],[.03,-.85]);light(c,()=>{c.beginPath();c.arc(0,-.62,.06,0,7);c.fill();});},
+    burj(c){[[.14,0,.32],[.1,.32,.55],[.07,.55,.74],[.045,.74,.86]].forEach(([w,a,b])=>c.fillRect(-w/2,-b,w,b-a));tri(c,[-.015,-.86],[0,-1],[.015,-.86]);},
+    mount(c){c.beginPath();c.moveTo(-1.5,0);c.lineTo(-.3,-.82);c.lineTo(0,-1);c.lineTo(.4,-.72);c.lineTo(1.5,0);c.fill();c.save();c.fillStyle='rgba(255,255,255,.85)';c.beginPath();c.moveTo(-.18,-.88);c.lineTo(0,-1);c.lineTo(.2,-.86);c.lineTo(.08,-.9);c.lineTo(0,-.86);c.fill();c.restore();},
+    // havadaki simgeler: merkez (0,0), yarıçap ~1
+    balloon(c){c.beginPath();c.moveTo(0,-1);c.bezierCurveTo(.75,-1,.8,-.15,.22,.25);c.lineTo(-.22,.25);c.bezierCurveTo(-.8,-.15,-.75,-1,0,-1);c.fill();light(c,()=>{c.beginPath();c.moveTo(0,-1);c.bezierCurveTo(.22,-.9,.25,-.1,.08,.25);c.lineTo(-.08,.25);c.bezierCurveTo(-.25,-.1,-.22,-.9,0,-1);c.fill();});c.fillRect(-.14,.5,.28,.22);strokeIn(c,.03,()=>{c.moveTo(-.2,.26);c.lineTo(-.13,.5);c.moveTo(.2,.26);c.lineTo(.13,.5);});},
+    paraglider(c){c.beginPath();c.ellipse(0,-.55,.95,.32,0,Math.PI,0);c.lineTo(.8,-.5);c.ellipse(0,-.5,.8,.18,0,0,Math.PI,true);c.fill();strokeIn(c,.025,()=>{c.moveTo(-.75,-.5);c.lineTo(0,.45);c.lineTo(.75,-.5);c.moveTo(-.3,-.38);c.lineTo(0,.45);c.lineTo(.3,-.38);});c.beginPath();c.arc(0,.5,.09,0,7);c.fill();c.fillRect(-.07,.58,.14,.28);},
+    machu(c){c.beginPath();c.moveTo(-1,.8);c.lineTo(-1,.3);for(let i=0;i<5;i++){c.lineTo(-1+i*.22,.3-i*.12);c.lineTo(-.78+i*.22,.3-i*.12);}c.lineTo(.1,-.3);c.lineTo(.45,-1);c.lineTo(.62,-.85);c.lineTo(1,.8);c.fill();light(c,()=>{for(let i=0;i<4;i++)c.fillRect(-.85+i*.22,.12-i*.12,.1,.08);});},
+    skydiver(c){c.beginPath();c.ellipse(0,0,.16,.42,0,0,7);c.fill();c.beginPath();c.arc(0,-.56,.14,0,7);c.fill();strokeIn(c,.13,()=>{c.moveTo(-.1,-.25);c.lineTo(-.55,-.55);c.lineTo(-.85,-.4);c.moveTo(.1,-.25);c.lineTo(.55,-.55);c.lineTo(.85,-.4);c.moveTo(-.08,.3);c.lineTo(-.4,.7);c.lineTo(-.7,.85);c.moveTo(.08,.3);c.lineTo(.4,.7);c.lineTo(.7,.85);});light(c,()=>{c.beginPath();c.ellipse(.03,-.58,.07,.04,0,0,7);c.fill();});},
+    cloud(c){[[-.45,.1,.38],[0,-.12,.5],[.45,.08,.36],[-.15,.2,.34],[.2,.22,.32]].forEach(([x,y,r])=>{c.beginPath();c.arc(x,y,r,0,7);c.fill();});c.fillRect(-.8,.12,1.6,.32);light(c,()=>{c.beginPath();c.arc(-.05,-.25,.22,0,7);c.fill();});},
+    condor(c){c.beginPath();c.moveTo(-1,-.05);c.quadraticCurveTo(-.5,-.4,-.08,-.08);c.lineTo(.08,-.08);c.quadraticCurveTo(.5,-.4,1,-.05);c.lineTo(.92,.03);c.lineTo(.84,0);c.lineTo(.76,.07);c.quadraticCurveTo(.4,-.1,.08,.12);c.lineTo(.15,.3);c.lineTo(-.15,.3);c.lineTo(-.08,.12);c.quadraticCurveTo(-.4,-.1,-.76,.07);c.lineTo(-.84,0);c.lineTo(-.92,.03);c.closePath();c.fill();c.beginPath();c.arc(0,-.14,.08,0,7);c.fill();}
+  };
+
+  const prevL=()=>stage>0?STG[Math.min(stage,STG.length)-1]:null;
+  const nextL=()=>stage<STG.length?STG[stage]:null;
+  function desiredTop(){const n=nextL();return Math.max((n?n.h:TOTAL_H)*1.2,dispH*1.15,.12);}
+
+  function draw(){
+    if(!W)return;
+    const ground=H-30,top=28,viewTop=camTop,k=(ground-top)/viewTop,cx=W/2;
+    const t=Math.min(1,Math.log10(dispH*10+1)/5);
+    const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,mix('DCEBF1','0B2440',t));g.addColorStop(1,mix('F3F0EC','3A5A78',t*.8));
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    const colW=Math.max(5,Math.min(26,UNIT_W_CM/100*k));
+    const P=prevL(),N=nextL(),shownL=[P,N].filter(Boolean);
+    // dağ arka planda
+    shownL.filter(l=>l.t==='mount').forEach(l=>{const hp=l.h*k;ctx.save();ctx.translate(cx+l.s*W*.28,ground);ctx.scale(hp,hp);ctx.fillStyle=l===P?'rgba(61,107,101,.6)':'rgba(70,90,105,.45)';SH.mount(ctx);ctx.restore();});
+    ctx.fillStyle='#CFC6BB';ctx.fillRect(0,ground,W,H-ground);ctx.fillStyle='#BDB3A7';ctx.fillRect(0,ground,W,2);
+    // yerdeki iki hedef: az önce geçilen ve sıradaki, kulenin hemen yanında
+    shownL.filter(l=>!l.f&&l.t!=='mount').forEach(l=>{const hp=l.h*k;if(hp<3)return;const w=hp*ASPECT[l.t],x=cx+l.s*(colW/2+14+w/2);
+      ctx.save();ctx.translate(x,ground);ctx.scale(hp,hp);ctx.fillStyle=l===P?'#3D6B65':'rgba(110,122,128,.75)';SH[l.t](ctx);ctx.restore();});
+    // havadaki hedefler
+    shownL.filter(l=>l.f).forEach(l=>{const y=ground-l.h*k,S=Math.min(30,Math.max(18,W*.026)),x=cx+l.s*(colW/2+S+16);
+      ctx.save();ctx.translate(x,y);ctx.scale(S,S);ctx.fillStyle=l===P?'#C6A27F':'#EFE6DD';SH[l.t](ctx);ctx.restore();});
+    // kule
+    const colH=dispH*k,unitPx=UNIT_CM/100*k;
+    if(colW>=8&&unitPx>=5&&shown<=900){for(let i=0;i<Math.round(shown);i++){const y=ground-(i+1)*unitPx;
+        ctx.fillStyle=i%2?'#C6A27F':'#3D6B65';rr(ctx,cx-colW/2,y+.6,colW,Math.max(1,unitPx-1.2),Math.min(4,unitPx/3));
+        ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillRect(cx-colW/2+colW*.15,y+unitPx*.3,colW*.7,Math.max(1,unitPx*.1));}}
+    else if(colH>0){ctx.save();ctx.shadowColor='rgba(198,162,127,'+(.55+glow*.4)+')';ctx.shadowBlur=(colW<10?10:0)+glow*18;
+      const gg=ctx.createLinearGradient(cx-colW/2,0,cx+colW/2,0);gg.addColorStop(0,'#2C524D');gg.addColorStop(.45,'#8FC0B8');gg.addColorStop(1,'#2C524D');ctx.fillStyle=gg;ctx.fillRect(cx-colW/2,ground-colH,colW,colH);ctx.restore();}
+    // etiketler: yalnızca iki hedef
+    ctx.font='500 12.5px '+(U.dir?'Vazirmatn,Tahoma,':'Jost,')+'system-ui,sans-serif';ctx.textBaseline='middle';ctx.direction=U.dir||'ltr';ctx.textAlign='left';
+    let lastY=-1e9;
+    shownL.slice().sort((a,b)=>b.h-a.h).forEach(l=>{const ly=ground-l.h*k;if(ly<top-6)return;const done=l===P;
+      const y=Math.max(ly,lastY+30);lastY=y;
+      ctx.strokeStyle=done?'rgba(61,107,101,.55)':'rgba(31,42,48,.3)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(cx+colW/2+4,ly);ctx.lineTo(W-14,y);ctx.stroke();ctx.setLineDash([]);
+      const txt=NM[l.id]+' · '+fmtM(l.h);const tw=ctx.measureText(txt).width+16;const tx=W-14-tw;
+      ctx.fillStyle=done?'rgba(23,48,47,.94)':'rgba(255,255,255,.95)';rr(ctx,tx,y-12,tw,24,12);ctx.fillStyle=done?'#EFE6DD':'#1F2A30';ctx.fillText(txt,tx+8,y+.5);});
+    ctx.direction='ltr';ctx.textAlign='start';
+    // uçak
+    const py=ground-PLANE*k;
+    if(py>top){ctx.save();ctx.translate(W*.7,py);ctx.fillStyle='#EFE6DD';ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(22,-3);ctx.quadraticCurveTo(30,0,22,3);ctx.closePath();ctx.fill();tri(ctx,[0,-1],[-10,-16],[8,-1]);tri(ctx,[0,1],[-10,16],[8,1]);tri(ctx,[-26,0],[-30,-9],[-22,-1]);ctx.restore();
+      ctx.fillStyle='rgba(239,230,221,.9)';ctx.font='500 11px '+(U.dir?'Vazirmatn,':'Jost,')+'sans-serif';ctx.textAlign='center';ctx.fillText(U.plane,W*.7,py+26);ctx.textAlign='start';}
+    // tepe etiketi
+    if(colH>0){const y=Math.max(top+14,ground-colH);const txt=fmtM(dispH);ctx.font='600 13px Jost,sans-serif';const tw=ctx.measureText(txt).width+18;ctx.fillStyle='#C6A27F';rr(ctx,cx-tw/2,y-32,tw,24,12);ctx.fillStyle='#17302F';ctx.textAlign='center';ctx.fillText(txt,cx,y-19.5);ctx.textAlign='start';}
+  }
+
+  // ---- tatlı sesler (Web Audio) ----
+  let AC=null,OUT=null,soundOn=true;try{soundOn=localStorage.getItem('mdk-snd')!=='0';}catch(e){}
+  function audio(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;try{AC=new C({latencyHint:'interactive'});}catch(e){return null;}
+      const comp=AC.createDynamicsCompressor();comp.threshold.value=-14;comp.connect(AC.destination);OUT=AC.createGain();OUT.gain.value=.5;OUT.connect(comp);
+      const sr=AC.sampleRate,n=Math.floor(sr*1.4),ir=AC.createBuffer(2,n,sr);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/sr/.32)*.5;}
+      const cv2=AC.createConvolver();cv2.buffer=ir;const wet=AC.createGain();wet.gain.value=.22;OUT.connect(wet);wet.connect(cv2);cv2.connect(comp);}
+    if(AC.state==='suspended')AC.resume();return AC;}
+  const SCALE=[0,2,4,7,9,12,14,16,19,21,24];
+  function note(semi,t0,vol,len){const a=AC,f=523.25*Math.pow(2,semi/12);
+    [[1,1],[2.01,.28],[3.98,.08]].forEach(([m,g])=>{const o=a.createOscillator(),e=a.createGain();o.type='sine';o.frequency.value=f*m;
+      e.gain.setValueAtTime(0,t0);e.gain.linearRampToValueAtTime(vol*g,t0+.006);e.gain.exponentialRampToValueAtTime(.0008,t0+len*(m>1?.5:1));o.connect(e);e.connect(OUT);o.start(t0);o.stop(t0+len+.05);});}
+  function sTap(i){if(!soundOn)return;const a=audio();if(!a)return;note(SCALE[Math.min(SCALE.length-1,i)]-12,a.currentTime+.005,.32,.5);}
+  function sPass(){if(!soundOn)return;const a=audio();if(!a)return;const t=a.currentTime+.01;[0,4,7,12].forEach((s,j)=>note(s,t+j*.075,.26,.9));note(24,t+.32,.08,1.4);}
+  function sFinal(){if(!soundOn)return;const a=audio();if(!a)return;const t=a.currentTime+.01;[0,4,7,12,16,19,24].forEach((s,j)=>note(s-12,t+j*.09,.24,1.6));}
+
+  const toastEl=document.getElementById('toast');let tt;
+  function toast(h){toastEl.innerHTML=h;toastEl.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('on'),1900);}
+
+  function tick(){
+    const target=count*UNIT_CM/100,now=performance.now();
+    if(!anim||anim.h1!==target)anim={h0:dispH,h1:target,c0:shown,c1:count,t0:now,d:reduce?1:1250};
+    const p=Math.min(1,(now-anim.t0)/anim.d),e=1-Math.pow(1-p,3);
+    dispH=lerp(anim.h0,anim.h1,e);shown=lerp(anim.c0,anim.c1,e);
+    camTop=lerp(camTop,desiredTop(),.035);glow=Math.max(0,glow-.02);
+    hud();draw();
+    raf=(p<1||Math.abs(camTop-desiredTop())>camTop*.002||glow>0)?requestAnimationFrame(tick):0;
+  }
+  const run=()=>{if(!raf)raf=requestAnimationFrame(tick);};
+  function stageFrom(){return stage===0?0:STG[stage-1].h*1.04;}
+  function stageTo(){return stage<STG.length?STG[stage].h*1.04:TOTAL_H;}
+  function nT(){return stage<STG.length?TAPS(stage):3;}
+  function add(){
+    if(count>=TOTAL){toast(T(U.fin,{h:fmtM(TOTAL_H),m:fmtM(PLANE-TOTAL_H)}));sFinal();return;}
+    tap++;const n=nT(),h=lerp(stageFrom(),stageTo(),tap/n);
+    count=Math.min(TOTAL,Math.max(count+1,Math.ceil(h/(UNIT_CM/100))));
+    const btn=document.getElementById('add');btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');
+    if(tap>=n){
+      if(stage<STG.length){const l=STG[stage];stage++;tap=0;sPass();glow=1;toast(T(U.pass,{x:NM[l.id]})+' · <i>'+fmtM(l.h)+'</i>');}
+      else{count=TOTAL;tap=0;stage++;sFinal();glow=1;toast(T(U.fin,{h:fmtM(TOTAL_H),m:fmtM(PLANE-TOTAL_H)}));}
+    }else sTap(stage%6+tap);
+    hud();run();
+  }
+  function hud(){
+    document.getElementById('hH').textContent=fmtM(dispH);
+    document.getElementById('hC').textContent=T(U.cnt,{n:fmt(shown)});
+    const N=nextL();
+    document.getElementById('hN').textContent=N?T(U.next,{x:NM[N.id],h:fmtM(N.h)}):(count<TOTAL?T(U.next,{x:fmtM(TOTAL_H),h:''}).replace(/\s*\(\s*\)/,''):T(U.fin,{h:fmtM(TOTAL_H),m:fmtM(PLANE-TOTAL_H)}));
+    const n=nT();document.getElementById('taps').innerHTML=count>=TOTAL?'':Array.from({length:n},(_,i)=>'<i'+(i<tap?' class="on"':'')+'></i>').join('');
+    document.getElementById('pb').style.width=(Math.min(stage,STG.length+1)/(STG.length+1)*100)+'%';
+    document.getElementById('pt').textContent=T(U.of,{a:fmt(count),b:fmt(TOTAL)});
+  }
+  function applyLang(code){
+    LG=UI[code]?code:'tr';U=UI[LG];
+    const names=NAMES[LG].split('|');LM.forEach((l,i)=>NM[l.id]=names[i]);
+    document.documentElement.lang=LG;document.documentElement.dir=U.dir||'ltr';
+    document.getElementById('sub').textContent=U.sub;document.getElementById('ttl').innerHTML=U.h;document.getElementById('tag').textContent=U.tag;
+    document.getElementById('addT').textContent=U.add;document.getElementById('end').textContent=U.end;document.getElementById('reset').textContent=U.reset;document.getElementById('how').textContent=U.how;
+    document.getElementById('howBox').textContent=T(U.note,{p:fmt(PATIENTS),t:fmt(TOTAL)});
+    cv.setAttribute('aria-label',U.aria);sel.setAttribute('aria-label',U.lang);sel.value=LG;sndB.title=U.snd;sndB.setAttribute('aria-label',U.snd);
+    const bk=document.getElementById('back');if(bk)bk.textContent=U.back;
+    try{localStorage.setItem('mdk-lang',LG);}catch(e){}
+    hud();draw();
+  }
+  const sel=document.getElementById('lang'),sndB=document.getElementById('snd');
+  sel.innerHTML=ORDER.map(k=>'<option value="'+k+'">'+k.toUpperCase()+' · '+UI[k].label+'</option>').join('');
+  sel.addEventListener('change',()=>applyLang(sel.value));
+  sndB.setAttribute('aria-pressed',soundOn);
+  sndB.addEventListener('click',()=>{soundOn=!soundOn;sndB.setAttribute('aria-pressed',soundOn);try{localStorage.setItem('mdk-snd',soundOn?'1':'0');}catch(e){}if(soundOn)sTap(4);});
+  document.getElementById('add').addEventListener('click',add);
+  cv.addEventListener('click',add);
+  document.getElementById('end').addEventListener('click',()=>{stage=STG.length+1;tap=0;count=TOTAL;glow=1;sFinal();toast(T(U.fin,{h:fmtM(TOTAL_H),m:fmtM(PLANE-TOTAL_H)}));hud();run();});
+  document.getElementById('reset').addEventListener('click',()=>{stage=0;tap=0;count=0;shown=0;dispH=0;camTop=.12;anim=null;hud();draw();});
+  document.getElementById('how').addEventListener('click',()=>{const b=document.getElementById('howBox');b.hidden=!b.hidden;});
+  document.getElementById('howBox').addEventListener('click',e=>{e.currentTarget.hidden=true;});
+  document.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&(e.target===document.body||e.target===cv)){e.preventDefault();add();}});
+  ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(soundOn)audio();},{passive:true,capture:true}));
+  const bk=document.getElementById('back');if(bk)bk.addEventListener('click',()=>{if(history.length>1)history.back();else location.href='./';});
+  let start='tr';try{const s=localStorage.getItem('mdk-lang');if(s&&UI[s])start=s;}catch(e){}
+  size();applyLang(start);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+})();
+</script>
+
+</body></html>
